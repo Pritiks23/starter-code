@@ -4,6 +4,8 @@ from alembic import context
 from db import Base
 from sqlalchemy import create_engine
 
+URL = "sqlite:///./app.db"
+
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 config = context.config
@@ -25,10 +27,6 @@ target_metadata = Base.metadata
 # ... etc.
 
 
-def get_url():
-    return "sqlite:///./app.db"
-
-
 def run_migrations_offline() -> None:
     """Run migrations in 'offline' mode.
 
@@ -41,9 +39,8 @@ def run_migrations_offline() -> None:
     script output.
 
     """
-    url = "sqlite:///./app.db"
     context.configure(
-        url=url,
+        url=URL,
         target_metadata=target_metadata,
         literal_binds=True,
         dialect_opts={"paramstyle": "named"},
@@ -60,8 +57,7 @@ def run_migrations_online() -> None:
     and associate a connection with the context.
 
     """
-    url = "sqlite:///./app.db"
-    connectable = create_engine(url, connect_args={"check_same_thread": False})
+    connectable = create_engine(URL, connect_args={"check_same_thread": False})
 
     with connectable.connect() as connection:
         context.configure(connection=connection, target_metadata=target_metadata)
