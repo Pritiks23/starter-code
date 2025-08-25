@@ -22,4 +22,17 @@ $ uv run alembic upgrade head
 This is a FastAPI application, so you should be able to run the app in either development mode or production mode. `fastapi-cli` is installed, so that command is available.
 
 ## Submitting your work
-You will receive a particular task or set of tasks. Please complete those in a new branch. Push that branch to GitHub and let us know that you are done.
+You will receive a particular task or set of tasks. To keep your work private, please create a private downstream repo:
+
+```bash
+$ git init private-repo
+$ cd private-repo
+$ git remote add upstream git@github.com:OneSpot-Learning/starter-code.git
+$ git remote add origin git@github.com:<username>/private-repo.git
+$ git push origin main
+```
+
+Then do your work on a feature branch, which you can name as you like.
+
+Once you have completed the task, invite the hiring manager as a collaborator on your private repo, and open a PR in your private repository.
+
