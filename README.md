@@ -8,14 +8,11 @@ This project uses `uv` for Python dependencies. After you have cloned this proje
 $ uv sync
 ```
 
-This project comes with a database with some test data in it. The file is `app.db`. If you want to create a new database, change the settings in `app/alembic/env.py` and `app/db.py` from `sqlite:///./app.db` to something else like `sqlite:///./another.db`. 
-
-*OR*
-
-You can delete `app.db` and run the following command to reinitialize the database:
+To initialize some sample data, there is a bootstrap script included called `bootstrap.py`. To initialize the database run migrations. amd then run the bootstrap script. This will create a file called `app.db` and populate it with data.
 
 ```bash
 $ uv run alembic upgrade head
+$ uv run bootstrap.py
 ```
 
 ## Launching the development server

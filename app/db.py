@@ -40,7 +40,7 @@ class School(Base):
 
     __tablename__ = "school"
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True, index=True)
-    name: Mapped[str] = mapped_column(String(255))
+    name: Mapped[str] = mapped_column(String(255), unique=True)
     classrooms: Mapped[List["Classroom"]] = relationship(back_populates="school")
     user_accounts: Mapped[List["UserAccount"]] = relationship(back_populates="school")
 
@@ -52,7 +52,7 @@ class Classroom(Base):
 
     __tablename__ = "classroom"
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True, index=True)
-    name: Mapped[str] = mapped_column(String(255))
+    name: Mapped[str] = mapped_column(String(255), unique=True)
     school_id: Mapped[int] = mapped_column(ForeignKey("school.id", ondelete="CASCADE"))
     school: Mapped["School"] = relationship(back_populates="classrooms")
     user_accounts: Mapped[List["UserAccount"]] = relationship(
