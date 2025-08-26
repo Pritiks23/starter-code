@@ -24,9 +24,9 @@ class BaseService:
         self.database = database
 
 
-# --------------------
+
 # School Service
-# --------------------
+
 class SchoolService(BaseService):
     def get(self, id: int) -> Optional[School]:
         stmt = select(School).where(School.id == id)
@@ -82,9 +82,9 @@ class SchoolService(BaseService):
         return None
 
 
-# --------------------
+
 # Classroom Service
-# --------------------
+
 class ClassroomService(BaseService):
     def get(self, id: int) -> Optional[Classroom]:
         stmt = select(Classroom).where(Classroom.id == id)
@@ -135,9 +135,9 @@ class ClassroomService(BaseService):
         return None
 
 
-# --------------------
+
 # UserAccount Service
-# --------------------
+
 class UserAccountService(BaseService):
     def get(self, id: int) -> Optional[UserAccount]:
         stmt = select(UserAccount).where(UserAccount.id == id)
@@ -196,9 +196,9 @@ class UserAccountService(BaseService):
         return None
 
 
-# --------------------
+
 # Assignment Service
-# --------------------
+
 class AssignmentService(BaseService):
     def get(self, id: int) -> Optional[Assignment]:
         stmt = select(Assignment).where(Assignment.id == id)
@@ -262,9 +262,9 @@ class AssignmentService(BaseService):
         return None
 
 
-# --------------------
+
 # Service Dependency Helper
-# --------------------
+
 class ServiceDependency:
     def __init__(self, class_name: str):
         self.service_class = globals().get(class_name)
