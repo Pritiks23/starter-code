@@ -23,6 +23,7 @@ from app.services import (
     SchoolService,
     ServiceDependency,
     UserAccountService,
+    AssignmentService,
 )
 from app.db import Assignment, Classroom, UserAccount, SessionLocal
 
@@ -256,98 +257,51 @@ async def delete_user(
 async def list_assignments(
     classroom_name: Optional[str] = None,
     student_name: Optional[str] = None,
+    service: AssignmentService = Depends(ServiceDependency("AssignmentService")),
 ):
-    def db_task():
-        db = SessionLocal()
-        try:
-            query = db.query(Assignment)
-            if classroom_name:
-                query = query.join(Classroom).filter(Classroom.name.ilike(f"%{classroom_name}%"))
-            if student_name:
-                query = query.join(UserAccount).filter(UserAccount.name.ilike(f"%{student_name}%"))
-            return query.all()
-        finally:
-            db.close()
-    return await asyncio.to_thread(db_task)
-
-
-@assignment_router.post("/", response_model=AssignmentModel)
-async def create_assignment(data: AssignmentPostModel):
-    def db_task():
-        db = SessionLocal()
-        try:
-            classroom = db.query(Classroom).filter(Classroom.id == data.classroom_id).first()
-            student = db.query(UserAccount).filter(UserAccount.id == data.student_id).first()
-            if not classroom or not student:
-                raise ServiceException("Classroom or Student not found")
-            assignment = Assignment(
-                title=data.title,
-                body=data.body,
-                submission_date=data.submission_date,
-                classroom_id=data.classroom_id,
-                student_id=data.student_id,
-            )
-            db.add(assignment)
-            db.commit()
-            db.refresh(assignment)
-            return assignment
-        finally:
-            db.close()
-    try:
-        return await asyncio.to_thread(db_task)
-    except ServiceException as e:
-        raise HTTPException(status_code=404, detail=str(e))
+    return await asyncio.to_thread(service.get_list, classroom_name, student_name)
 
 
 @assignment_router.get("/{id}", response_model=AssignmentModel)
-async def get_assignment(id: int):
-    def db_task():
-        db = SessionLocal()
-        try:
-            return db.query(Assignment).filter(Assignment.id == id).first()
-        finally:
-            db.close()
-    assignment = await asyncio.to_thread(db_task)
-    if not assignment:
+async def get_assignment(
+    id: int, service: AssignmentService = Depends(ServiceDependency("AssignmentService"))
+):
+    result = await asyncio.to_thread(service.get, id)
+    if not result:
         raise HTTPException(status_code=404, detail="Assignment not found")
-    return assignment
+    return result
+
+
+@assignment_router.post("/", response_model=AssignmentModel)
+async def create_assignment(
+    data: AssignmentPostModel, service: AssignmentService = Depends(ServiceDependency("AssignmentService"))
+):
+    try:
+        result = await asyncio.to_thread(service.create, data)
+        return result
+    except ServiceException as e:
+        raise HTTPException(status_code=400, detail=str(e))
 
 
 @assignment_router.patch("/{id}", response_model=AssignmentModel)
-async def update_assignment(id: int, data: AssignmentUpdateModel):
-    def db_task():
-        db = SessionLocal()
-        try:
-            assignment = db.query(Assignment).filter(Assignment.id == id).first()
-            if not assignment:
-                raise ServiceException("Assignment not found")
-            for field, value in data.dict(exclude_unset=True).items():
-                setattr(assignment, field, value)
-            db.commit()
-            db.refresh(assignment)
-            return assignment
-        finally:
-            db.close()
+async def update_assignment(
+    id: int, data: AssignmentUpdateModel, service: AssignmentService = Depends(ServiceDependency("AssignmentService"))
+):
     try:
-        return await asyncio.to_thread(db_task)
+        result = await asyncio.to_thread(service.update, id, data)
+        if not result:
+            raise HTTPException(status_code=404, detail="Assignment not found")
+        return result
     except ServiceException as e:
-        raise HTTPException(status_code=404, detail=str(e))
+        raise HTTPException(status_code=400, detail=str(e))
 
 
 @assignment_router.delete("/{id}", status_code=204)
-async def delete_assignment(id: int):
-    def db_task():
-        db = SessionLocal()
-        try:
-            assignment = db.query(Assignment).filter(Assignment.id == id).first()
-            if not assignment:
-                raise ServiceException("Assignment not found")
-            db.delete(assignment)
-            db.commit()
-        finally:
-            db.close()
+async def delete_assignment(
+    id: int, service: AssignmentService = Depends(ServiceDependency("AssignmentService"))
+):
     try:
-        await asyncio.to_thread(db_task)
+        await asyncio.to_thread(service.delete, id)
         return None
     except ServiceException as e:
         raise HTTPException(status_code=404, detail=str(e))
