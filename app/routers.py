@@ -27,9 +27,9 @@ from app.services import (
 )
 from app.db import Assignment, Classroom, UserAccount, SessionLocal
 
-# -----------------------------
+
 # Routers
-# -----------------------------
+
 school_router = APIRouter(
     prefix="/school", tags=["school"], responses={404: {"description": "Not Found"}}
 )
@@ -50,9 +50,9 @@ assignment_router = APIRouter(
     responses={404: {"description": "Not Found"}},
 )
 
-# -----------------------------
+
 # School Routes
-# -----------------------------
+
 @school_router.get("/")
 async def list_schools(
     ids: Annotated[Optional[int], Query(alias="schools")] = None,
@@ -116,9 +116,9 @@ async def delete_school(
             status_code=400, detail="Something went wrong. Not deleted."
         )
 
-# -----------------------------
+
 # Classroom Routes
-# -----------------------------
+
 @classroom_router.get("/")
 async def list_classrooms(
     ids: Annotated[Optional[int], Query(alias="classrooms")] = None,
@@ -182,9 +182,9 @@ async def delete_classroom(
             status_code=400, detail="Something went wrong. Not deleted."
         )
 
-# -----------------------------
+
 # User Routes
-# -----------------------------
+
 @user_router.get("/")
 async def list_users(
     ids: Annotated[Optional[int], Query(alias="users")] = None,
@@ -250,9 +250,9 @@ async def delete_user(
             status_code=400, detail="Something went wrong. Not deleted."
         )
 
-# -----------------------------
+
 # Assignment Routes
-# -----------------------------
+
 @assignment_router.get("/", response_model=List[AssignmentModel])
 async def list_assignments(
     classroom_name: Optional[str] = None,
