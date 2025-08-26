@@ -1,73 +1,32 @@
-from logging.config import fileConfig
+"""add assignment table
 
-from alembic import context
-from db import Base
-from sqlalchemy import create_engine
+Revision ID: add_assignment_table
+Revises: 
+Create Date: 2025-08-26 09:00:00.000000
 
-URL = "sqlite:///./app.db"
+"""
+from alembic import op
+import sqlalchemy as sa
 
-# this is the Alembic Config object, which provides
-# access to the values within the .ini file in use.
-config = context.config
+# revision identifiers, used by Alembic.
+revision = 'add_assignment_table'
+down_revision = None
+branch_labels = None
+depends_on = None
 
-# Interpret the config file for Python logging.
-# This line sets up loggers basically.
-if config.config_file_name is not None:
-    fileConfig(config.config_file_name)
-
-# add your model's MetaData object here
-# for 'autogenerate' support
-# from myapp import mymodel
-# target_metadata = mymodel.Base.metadata
-target_metadata = Base.metadata
-
-# other values from the config, defined by the needs of env.py,
-# can be acquired:
-# my_important_option = config.get_main_option("my_important_option")
-# ... etc.
-
-
-def run_migrations_offline() -> None:
-    """Run migrations in 'offline' mode.
-
-    This configures the context with just a URL
-    and not an Engine, though an Engine is acceptable
-    here as well.  By skipping the Engine creation
-    we don't even need a DBAPI to be available.
-
-    Calls to context.execute() here emit the given string to the
-    script output.
-
-    """
-    context.configure(
-        url=URL,
-        target_metadata=target_metadata,
-        literal_binds=True,
-        dialect_opts={"paramstyle": "named"},
-        render_as_batch=True,
+def upgrade():
+    # Create assignment table
+    op.create_table(
+        'assignment',
+        sa.Column('id', sa.Integer, primary_key=True, autoincrement=True, index=True),
+        sa.Column('title', sa.String(length=255), nullable=False),
+        sa.Column('body', sa.String, nullable=True),
+        sa.Column('submission_date', sa.DateTime, nullable=True),
+        sa.Column('classroom_id', sa.Integer, sa.ForeignKey('classroom.id', ondelete='CASCADE'), nullable=False),
+        sa.Column('student_id', sa.Integer, sa.ForeignKey('user_account.id', ondelete='CASCADE'), nullable=False),
     )
 
-    with context.begin_transaction():
-        context.run_migrations()
+def downgrade():
+    # Drop assignment table
+    op.drop_table('assignment')
 
-
-def run_migrations_online() -> None:
-    """Run migrations in 'online' mode.
-
-    In this scenario we need to create an Engine
-    and associate a connection with the context.
-
-    """
-    connectable = create_engine(URL, connect_args={"check_same_thread": False})
-
-    with connectable.connect() as connection:
-        context.configure(connection=connection, target_metadata=target_metadata)
-
-        with context.begin_transaction():
-            context.run_migrations()
-
-
-if context.is_offline_mode():
-    run_migrations_offline()
-else:
-    run_migrations_online()
