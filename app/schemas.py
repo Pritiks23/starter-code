@@ -2,9 +2,9 @@ from typing import Any, List, Optional
 from datetime import datetime
 from pydantic import BaseModel, field_validator
 
-# --------------------
+
 # School Schemas
-# --------------------
+
 class SchoolPostModel(BaseModel):
     name: str
 
@@ -28,9 +28,9 @@ class SchoolUpdateModel(BaseModel):
     user_accounts: Optional[List[int]] = None
 
 
-# --------------------
+
 # Classroom Schemas
-# --------------------
+
 class ClassroomPostModel(BaseModel):
     name: str
     school_id: int
@@ -53,9 +53,9 @@ class ClassroomUpdateModel(BaseModel):
     user_accounts: Optional[List[int]] = None
 
 
-# --------------------
+
 # UserAccount Schemas
-# --------------------
+
 class UserAccountPostModel(BaseModel):
     name: str
     email: str
@@ -81,9 +81,9 @@ class UserAccountUpdateModel(BaseModel):
     is_student: Optional[bool] = None
 
 
-# --------------------
+
 # Assignment Schemas
-# --------------------
+
 class AssignmentPostModel(BaseModel):
     title: str
     body: str
