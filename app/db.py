@@ -10,7 +10,7 @@ from sqlalchemy.orm import (
     sessionmaker,
 )
 
-# Database engine and session
+
 engine = create_engine("sqlite:///./app.db", connect_args={"check_same_thread": False})
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
@@ -18,7 +18,7 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 class Base(DeclarativeBase):
     pass
 
-# Many-to-many association table for Classroom <-> UserAccount
+
 classroom_user_account_table = Table(
     "classroom_user_account_table",
     Base.metadata,
