@@ -10,15 +10,15 @@ from sqlalchemy.orm import (
     sessionmaker,
 )
 
-
+# Database engine and session
 engine = create_engine("sqlite:///./app.db", connect_args={"check_same_thread": False})
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
-
+# Base declarative class
 class Base(DeclarativeBase):
     pass
 
-
+# Many-to-many association table for Classroom <-> UserAccount
 classroom_user_account_table = Table(
     "classroom_user_account_table",
     Base.metadata,
@@ -32,7 +32,7 @@ classroom_user_account_table = Table(
     ),
 )
 
-
+# School model
 class School(Base):
     __tablename__ = "school"
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True, index=True)
@@ -40,7 +40,7 @@ class School(Base):
     classrooms: Mapped[List["Classroom"]] = relationship(back_populates="school")
     user_accounts: Mapped[List["UserAccount"]] = relationship(back_populates="school")
 
-
+# Classroom model
 class Classroom(Base):
     __tablename__ = "classroom"
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True, index=True)
@@ -51,10 +51,10 @@ class Classroom(Base):
         secondary=classroom_user_account_table, back_populates="classrooms"
     )
     assignments: Mapped[List["Assignment"]] = relationship(
-        back_populates="classroom", cascade="all, delete"
+        "Assignment", back_populates="classroom", cascade="all, delete"
     )
 
-
+# UserAccount model
 class UserAccount(Base):
     __tablename__ = "user_account"
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True, index=True)
@@ -69,16 +69,11 @@ class UserAccount(Base):
         secondary=classroom_user_account_table, back_populates="user_accounts"
     )
     assignments: Mapped[List["Assignment"]] = relationship(
-        back_populates="student", cascade="all, delete"
+        "Assignment", back_populates="student", cascade="all, delete"
     )
 
-
-
+# Assignment model
 class Assignment(Base):
-    """
-    Represents a student assignment in the system
-    """
-
     __tablename__ = "assignment"
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True, index=True)
     title: Mapped[str] = mapped_column(String(255))
@@ -94,3 +89,4 @@ class Assignment(Base):
 # Configure mappers
 Base.registry.configure()
 configure_mappers()
+
