@@ -73,7 +73,12 @@ class UserAccount(Base):
     )
 
 
+
 class Assignment(Base):
+    """
+    Represents a student assignment in the system
+    """
+
     __tablename__ = "assignment"
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True, index=True)
     title: Mapped[str] = mapped_column(String(255))
